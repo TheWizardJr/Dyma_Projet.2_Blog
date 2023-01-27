@@ -1,12 +1,16 @@
-import { async } from "regenerator-runtime";
 import "../assets/styles/styles.scss";
 import "./form.scss";
 
 const form = document.querySelector("form");
 const errorElement = document.querySelector("#errors");
+const btnCancel = document.querySelector(".btn-secondary");
 let errors = [];
 
-form.addEventListener("submit", async event => {
+btnCancel.addEventListener("click", () => {
+  window.location.assign("/index.html");
+});
+
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const formData = new FormData(form);
   const article = Object.fromEntries(formData.entries());
@@ -17,18 +21,22 @@ form.addEventListener("submit", async event => {
         method: "POST",
         body: json,
         headers: {
-          "Content-type": "application/json"
-        }
+          "Content-type": "application/json",
+        },
       });
       const body = await response.json();
       console.log(body);
+      if (response.status < 299) {
+        window.location.assign("/index.html")
+      }
     } catch (e) {
       console.error("e : ", e);
     }
   }
 });
 
-const formIsValid = article => {
+const formIsValid = (article) => {
+  errors = [];
   if (
     !article.author ||
     !article.category ||
@@ -47,7 +55,7 @@ const formIsValid = article => {
   }
   if (errors.length) {
     let errorHTML = "";
-    errors.forEach(e => {
+    errors.forEach((e) => {
       errorHTML += `<li>${e}</li>`;
     });
     errorElement.innerHTML = errorHTML;
